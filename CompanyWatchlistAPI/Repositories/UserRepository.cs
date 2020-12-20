@@ -19,7 +19,7 @@ namespace CompanyWatchlistAPI.Repositories
         }
         public IEnumerable<User> Get(Expression<Func<User, bool>> predicate)
         {
-            return _dbContext.Set<User>().Where(predicate).AsEnumerable<User>();
+            return _dbContext.Set<User>().Where(predicate).AsEnumerable();
         }
         public User GetOne(Expression<Func<User, bool>> predicate)
         {
@@ -34,6 +34,22 @@ namespace CompanyWatchlistAPI.Repositories
         {
             User entity = _dbContext.Set<User>().Find(id);
             _dbContext.Set<User>().Remove(entity);
+        }
+
+        public User Login(Login login)
+        {
+            if (login == null || login.Email == null || login.Password == null)
+            {
+                return null;
+            }
+
+
+            return _dbContext.Set<User>().FirstOrDefault(x => x.Email == login.Email && x.Password == login.Password);
+        }
+
+        private string EncryptPassword(string password)
+        {
+            return "";
         }
     }
 }

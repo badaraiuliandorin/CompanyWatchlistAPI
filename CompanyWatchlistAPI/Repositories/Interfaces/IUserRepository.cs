@@ -7,6 +7,7 @@ namespace CompanyWatchlistAPI.Repositories.Interfaces
 {
     public interface IUserRepository
     {
+        User Login(Login login);
         IEnumerable<User> GetAll();
         IEnumerable<User> Get(Expression<Func<User, bool>> predicate);
         User GetOne(Expression<Func<User, bool>> predicate);
