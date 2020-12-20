@@ -7,10 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace CompanyWatchlistAPI.Controllers
@@ -102,24 +100,7 @@ namespace CompanyWatchlistAPI.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string Decrypt(string cipherText)
-        {
-            string password = _configuration["FrontendDecryptionKey"];
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
-            using Aes encryptor = Aes.Create();
-            var salt = cipherBytes.Take(16).ToArray();
-            var iv = cipherBytes.Skip(16).Take(16).ToArray();
-            var encrypted = cipherBytes.Skip(32).ToArray();
-            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(password, salt, 100);
-            encryptor.Key = pdb.GetBytes(32);
-            encryptor.Padding = PaddingMode.PKCS7;
-            encryptor.Mode = CipherMode.CBC;
-            encryptor.IV = iv;
-            using MemoryStream ms = new MemoryStream(encrypted);
-            using CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Read);
-            using var reader = new StreamReader(cs, Encoding.UTF8);
-            return reader.ReadToEnd();
-        }
+        
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "1")]

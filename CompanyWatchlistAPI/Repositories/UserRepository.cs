@@ -1,5 +1,6 @@
 ﻿using CompanyWatchlistAPI.Models;
 using CompanyWatchlistAPI.Repositories.Interfaces;
+using CompanyWatchlistAPI.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,11 @@ namespace CompanyWatchlistAPI.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly DatabaseContext _dbContext;
-        public UserRepository(DatabaseContext databaseContext)
+        private readonly IEncryptionService _encryptionService;
+        public UserRepository(DatabaseContext databaseContext, IEncryptionService encryptionService)
         {
             _dbContext = databaseContext;
+            _encryptionService = encryptionService;
         }
         public IEnumerable<User> GetAll()
         {
@@ -30,6 +33,8 @@ namespace CompanyWatchlistAPI.Repositories
         {
             if (entity != null)
             {
+                var encryptedPassword = _encryptionService.Encrypt(entity.Password);
+                entity.Password = encryptedPassword;
                 var result = _dbContext.Set<User>().Add(entity);
                 _dbContext.SaveChanges();
                 return result.Entity;
@@ -51,8 +56,14 @@ namespace CompanyWatchlistAPI.Repositories
                 return null;
             }
 
+            var sameEmailUser = _dbContext.Set<User>().FirstOrDefault(x => x.Email == login.Email);
 
-            return _dbContext.Set<User>().FirstOrDefault(x => x.Email == login.Email && x.Password == login.Password);
+            if (sameEmailUser != null && login.Password.Equals(_encryptionService.Decrypt(sameEmailUser.Password)))
+            {
+                return sameEmailUser;
+            }
+
+            return null;
         }
 
         private string EncryptPassword(string password)

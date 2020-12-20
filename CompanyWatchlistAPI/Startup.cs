@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using CompanyWatchlistAPI.Repositories.Interfaces;
 using CompanyWatchlistAPI.Repositories;
+using CompanyWatchlistAPI.Services.Interfaces;
+using CompanyWatchlistAPI.Services;
 
 namespace CompanyWatchlistAPI
 {
@@ -87,6 +89,8 @@ namespace CompanyWatchlistAPI
                 services.AddScoped<IUserRepository, UserRepository>();
                 services.AddScoped<IRoleRepository, RoleRepository>();
                 services.AddScoped<IWatchlistRepository, WatchlistRepository>();
+
+                services.AddScoped<IEncryptionService, EncryptionService>();
 
                 services.AddTransient<JwtSecurityTokenHandler>();
 
