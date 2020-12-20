@@ -9,9 +9,10 @@ namespace CompanyWatchlistAPI.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private DatabaseContext _dbContext;
-        public UserRepository()
+        private readonly DatabaseContext _dbContext;
+        public UserRepository(DatabaseContext databaseContext)
         {
+            _dbContext = databaseContext;
         }
         public IEnumerable<User> GetAll()
         {
@@ -25,15 +26,22 @@ namespace CompanyWatchlistAPI.Repositories
         {
             return _dbContext.Set<User>().Where(predicate).FirstOrDefault();
         }
-        public void Insert(User entity)
+        public User Insert(User entity)
         {
             if (entity != null)
-                _dbContext.Set<User>().Add(entity);
+            {
+                var result = _dbContext.Set<User>().Add(entity);
+                _dbContext.SaveChanges();
+                return result.Entity;
+            }
+
+            return null;
         }
         public void Delete(object id)
         {
             User entity = _dbContext.Set<User>().Find(id);
             _dbContext.Set<User>().Remove(entity);
+            _dbContext.SaveChanges();
         }
 
         public User Login(Login login)

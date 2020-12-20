@@ -10,7 +10,7 @@ namespace CompanyWatchlistAPI.Repositories.Interfaces
         IEnumerable<Watchlist> GetAll();
         IEnumerable<Watchlist> Get(Expression<Func<Watchlist, bool>> predicate);
         Watchlist GetOne(Expression<Func<Watchlist, bool>> predicate);
-        void Insert(Watchlist entity);
+        Watchlist Insert(Watchlist entity);
         void Delete(object id);
     }
 }

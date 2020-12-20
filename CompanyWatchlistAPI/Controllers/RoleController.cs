@@ -1,5 +1,6 @@
 ﻿using CompanyWatchlistAPI.Models;
 using CompanyWatchlistAPI.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyWatchlistAPI.Controllers
@@ -20,6 +21,7 @@ namespace CompanyWatchlistAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "1")]
         public IActionResult GetAll()
         {
             var items = _roleRepository.GetAll();
@@ -28,6 +30,7 @@ namespace CompanyWatchlistAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "1")]
         public IActionResult GetOne(int id)
         {
             var item = _roleRepository.GetOne(x => x.Id == id);
@@ -35,33 +38,20 @@ namespace CompanyWatchlistAPI.Controllers
             return Ok(item);
         }
 
-        [HttpGet("{userId}")]
-        public IActionResult GetByUserId(int userId)
-        {
-            var user = _userRepository.GetOne(x => x.Id == userId);
-
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            var item = _roleRepository.GetOne(x => x.Id == user.RoleId);
-
-            return Ok(item);
-        }
-
         [HttpPost]
+        [Authorize(Roles = "1")]
         public IActionResult Add(Role role)
         {
             if (role == null)
                 return BadRequest();
 
-            _roleRepository.Insert(role);
+            var result = _roleRepository.Insert(role);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "1")]
         public IActionResult Delete(int id)
         {
             _roleRepository.Delete(id);

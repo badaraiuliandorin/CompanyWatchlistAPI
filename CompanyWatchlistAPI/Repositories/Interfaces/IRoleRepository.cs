@@ -10,7 +10,7 @@ namespace CompanyWatchlistAPI.Repositories.Interfaces
         IEnumerable<Role> GetAll();
         IEnumerable<Role> Get(Expression<Func<Role, bool>> predicate);
         Role GetOne(Expression<Func<Role, bool>> predicate);
-        void Insert(Role entity);
+        Role Insert(Role entity);
         void Delete(object id);
     }
 }

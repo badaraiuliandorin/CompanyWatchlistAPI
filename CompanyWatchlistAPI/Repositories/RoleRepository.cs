@@ -9,9 +9,10 @@ namespace CompanyWatchlistAPI.Repositories
 {
     public class RoleRepository : IRoleRepository
     {
-        private DatabaseContext _dbContext;
-        public RoleRepository()
+        private readonly DatabaseContext _dbContext;
+        public RoleRepository(DatabaseContext databaseContext)
         {
+            _dbContext = databaseContext;
         }
         public IEnumerable<Role> GetAll()
         {
@@ -25,15 +26,23 @@ namespace CompanyWatchlistAPI.Repositories
         {
             return _dbContext.Set<Role>().Where(predicate).FirstOrDefault();
         }
-        public void Insert(Role entity)
+        public Role Insert(Role entity)
         {
             if (entity != null)
-                _dbContext.Set<Role>().Add(entity);
+            {
+                var result = _dbContext.Set<Role>().Add(entity);
+                _dbContext.SaveChanges();
+                
+                return result.Entity;
+            }
+
+            return null;
         }
         public void Delete(object id)
         {
             Role entity = _dbContext.Set<Role>().Find(id);
             _dbContext.Set<Role>().Remove(entity);
+            _dbContext.SaveChanges();
         }
     }
 }

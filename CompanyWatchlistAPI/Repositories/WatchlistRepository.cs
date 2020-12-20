@@ -9,9 +9,10 @@ namespace CompanyWatchlistAPI.Repositories
 {
     public class WatchlistRepository : IWatchlistRepository
     {
-        private DatabaseContext _dbContext;
-        public WatchlistRepository()
+        private readonly DatabaseContext _dbContext;
+        public WatchlistRepository(DatabaseContext databaseContext)
         {
+            _dbContext = databaseContext;
         }
         public IEnumerable<Watchlist> GetAll()
         {
@@ -25,15 +26,22 @@ namespace CompanyWatchlistAPI.Repositories
         {
             return _dbContext.Set<Watchlist>().Where(predicate).FirstOrDefault();
         }
-        public void Insert(Watchlist entity)
+        public Watchlist Insert(Watchlist entity)
         {
             if (entity != null)
-                _dbContext.Set<Watchlist>().Add(entity);
+            {
+                var result = _dbContext.Set<Watchlist>().Add(entity);
+                _dbContext.SaveChanges();
+                return result.Entity;
+            }
+
+            return null;
         }
         public void Delete(object id)
         {
             Watchlist entity = _dbContext.Set<Watchlist>().Find(id);
             _dbContext.Set<Watchlist>().Remove(entity);
+            _dbContext.SaveChanges();
         }
     }
 }

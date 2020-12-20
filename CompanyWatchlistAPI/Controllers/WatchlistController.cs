@@ -19,6 +19,20 @@ namespace CompanyWatchlistAPI.Controllers
             _userRepository = userRepository;
         }
 
+        [HttpGet("{userId}")]
+        public IActionResult GetByUserId(int userId)
+        {
+            var user = _userRepository.GetOne(x => x.Id == userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var items = _watchlistRepository.Get(x => x.UserId == user.Id);
+
+            return Ok(items);
+        }
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -35,30 +49,15 @@ namespace CompanyWatchlistAPI.Controllers
             return Ok(item);
         }
 
-        [HttpGet("{userId}")]
-        public IActionResult GetByUserId(int userId)
-        {
-            var user = _userRepository.GetOne(x => x.Id == userId);
-
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            var items = _watchlistRepository.Get(x => x.UserId == user.Id);
-
-            return Ok(items);
-        }
-
         [HttpPost]
         public IActionResult Add(Watchlist watchlist)
         {
             if (watchlist == null)
                 return BadRequest();
 
-            _watchlistRepository.Insert(watchlist);
+            var result = _watchlistRepository.Insert(watchlist);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

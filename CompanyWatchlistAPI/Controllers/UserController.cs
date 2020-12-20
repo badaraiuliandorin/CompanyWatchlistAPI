@@ -57,9 +57,9 @@ namespace CompanyWatchlistAPI.Controllers
             if (user == null || user.RoleId == adminRoleId)
                 return BadRequest();
 
-            _userRepository.Insert(user);
+            var result = _userRepository.Insert(user);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost]
@@ -83,7 +83,7 @@ namespace CompanyWatchlistAPI.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.RoleId.ToString())
@@ -125,6 +125,11 @@ namespace CompanyWatchlistAPI.Controllers
         [Authorize(Roles = "1")]
         public IActionResult Delete(int id)
         {
+            var adminRoleId = _roleRepository.Get(x => x.Name == "Admin").FirstOrDefault().Id;
+            var user = _userRepository.GetOne(x => x.Id == id);
+            if (user.RoleId == adminRoleId)
+                return BadRequest();
+
             _userRepository.Delete(id);
 
             return Ok();

@@ -11,7 +11,7 @@ namespace CompanyWatchlistAPI.Repositories.Interfaces
         IEnumerable<User> GetAll();
         IEnumerable<User> Get(Expression<Func<User, bool>> predicate);
         User GetOne(Expression<Func<User, bool>> predicate);
-        void Insert(User entity);
+        User Insert(User entity);
         void Delete(object id);
     }
 }
